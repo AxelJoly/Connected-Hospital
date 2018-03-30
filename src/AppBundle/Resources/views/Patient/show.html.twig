@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block javascripts %}
+    <script type="text/javascript">
+
+        var app = angular.module('app', ['ngResource']);
+
+        app.factory('Show', function($resource) {
+            return $resource('/api/patient/pat:id', {id: '@id'});
+        });
+
+
+
+
+        app.controller('ShowController', function ($scope, Show,$interval) {
+            $scope.shows = [];
+
+            $scope.loading = false;
+            $scope.details = null;
+
+
+            $scope.update = function () {
+                /*$scope.loading = true;
+                 $scope.shows = [];
+                 $scope.details = null;*/
+
+                Show.query().$promise
+                        .then( function (data) {
+
+                            $scope.shows = data;
+
+                        })
+                        .finally( function () {
+                            $scope.loading = false;
+                        });
+            }
+
+
+
+            $scope.select = function (show) {
+                //$scope.details = null;
+
+                Show.get({id: show.id}).$promise.then( function (data) {
+                    $scope.details = data;
+                });
+            }
+
+            // initialise la première fois
+            $scope.update();
+            $interval($scope.update, 5000);
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <h1>Liste des séries</h1>
+    <div ng-app="app" ng-controller="ShowController">
+
+
+
+
+        <br /><br />
+
+        <table class="bordered">
+            <tr>
+                <td>Date d'ajout</td>
+                <td>Nom</td>
+                <td>Prenom</td>
+                <td>Bpm</td>
+                <td>Glycemie</td>
+                <td>Temperature</td>
+                <td>Pression Arteriel</td>
+                <td>Numéros de chambre</td>
+            </tr>
+            <tr ng-repeat="show in shows | filter: {title: search} | orderBy: '-date'" >
+                <a href="{{ path('patientProfile' , {'id':'{{ show.patient.id }}'}) }}">
+                <td>{{ "{{ show.date | date:'yyyy-MM-dd HH:mm:ss' }}" }}</td>
+                <td >{{ '{{ show.patient.last_name }}' }}</td></a>
+                <td >{{ '{{ show.patient.first_name }}' }}</td>
+                <td >{{ '{{ show.bpm }}' }}</td>
+                <td >{{ '{{ show.glycemia }}' }}</td>
+                <td >{{ '{{ show.temperature }}' }}</td>
+                <td >{{ '{{ show.blood_pressure }}' }}</td>
+                <td >{{ '{{ show.patient.seat.name }}' }}</td>
+            </tr>
+        </table>
+    </div>
+{% endblock %}
+

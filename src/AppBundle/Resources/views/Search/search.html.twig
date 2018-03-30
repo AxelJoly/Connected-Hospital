@@ -1,0 +1,4 @@
+[{% for patient in patients -%}
+    {{ {value: patient.id, firstName: patient.firstName}|json_encode|raw }}
+    {%- if not loop.last %},{% endif -%}
+    {%- endfor %}]

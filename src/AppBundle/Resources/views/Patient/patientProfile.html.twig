@@ -1,0 +1,175 @@
+{% extends 'base.html.twig' %}
+
+
+
+
+{% block javascripts %}
+    <!-- unminified for development -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-google-chart/1.0.0-beta.1/ng-google-chart.js" type="text/javascript"></script>
+
+    <!-- minified for production -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-google-chart/1.0.0-beta.1/ng-google-chart.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        var app = angular.module('app', ['ngResource', 'googlechart']);
+        var id = {{ patientId }}
+        app.factory('Show', function($resource) {
+            return $resource('/api/patient/graphData:id', {id: id});
+        });
+
+        app.controller('ShowController', function ($scope, Show,$interval, $filter) {
+            $scope.shows = [];
+
+            $scope.myChartObject = {};
+            $scope.loading = false;
+            $scope.details = null;
+
+
+            $scope.update = function () {
+                /*$scope.loading = true;
+                 $scope.shows = [];
+                 $scope.details = null;*/
+
+                Show.query().$promise
+                    .then( function (data) {
+
+                        $scope.shows = data;
+                        init();
+                    })
+                    .finally( function () {
+                        $scope.loading = false;
+                    });
+            }
+
+            $scope.select = function (show) {
+                //$scope.details = null;
+
+                Show.get({id: show.id}).$promise.then( function (data) {
+                    $scope.details = data;
+                });
+            }
+
+            function init() {
+
+                var jsonArray = [];
+                $scope.myChartObject.type = "LineChart";
+                $scope.myChartObject.displayed = false;
+                var length = $scope.shows.length;
+
+
+                for (var i = 0; i < $scope.shows.length; i++) {
+                    jsonArray.push({
+                        c: [{
+
+                        }, {
+                            v: $scope.shows[i].bpm,
+                            f: $filter('date')($scope.shows[i].date,'yyyy-MM-dd HH:mm:ss')
+                        }, {
+                            v: $scope.shows[i].glycemia,
+                            f: $filter('date')($scope.shows[i].date,'yyyy-MM-dd HH:mm:ss')
+                        }, {
+                            v: $scope.shows[i].temperature,
+                            f: $filter('date')($scope.shows[i].date,'yyyy-MM-dd HH:mm:ss')
+                        }, {
+                            v: $scope.shows[i].blood_pressure,
+                            f: $filter('date')($scope.shows[i].date,'yyyy-MM-dd HH:mm:ss')
+                        }]
+                    });
+
+                }
+                $scope.myChartObject.data = {
+                    "cols": [{
+                        id: "values",
+                        label: "Données du patient",
+                        type: "string"
+                    }, {
+                        id: "bpm",
+                        label: "BPM",
+                        type: "number"
+                    }, {
+                        id: "glycemia",
+                        label: "Glycémie",
+                        type: "number"
+                    }, {
+                        id: "temperature",
+                        label: "Temperature",
+                        type: "number"
+                    }, {
+                        id: "bloodPressure",
+                        label: "Pression Artérielle",
+                        type: "number"
+                    }],
+                    "rows": jsonArray}
+
+                console.log(jsonArray);
+
+                    $scope.myChartObject.options = {
+                    "title": "Sales per month",
+                    "colors": ['#0000FF', '#009900', '#CC0000', '#DD9900'],
+                    "defaultColors": ['#0000FF', '#009900', '#CC0000', '#DD9900'],
+                    "isStacked": "true",
+                    "fill": 20,
+                    "displayExactValues": true,
+                    "vAxis": {
+                        "title": "Sales unit",
+                        "gridlines": {
+                            "count": 10
+                        }
+                    },
+                    "hAxis": {
+                        "title": "Date"
+                    }
+                };
+
+                $scope.myChartObject.view = {
+                    columns: [0, 1, 2, 3, 4]
+                };
+            }
+
+            // initialise la première fois
+            $scope.update();
+            $interval($scope.update, 2000);
+
+
+        });
+    </script>
+
+
+{% endblock %}
+
+{% block body %}
+
+
+
+
+    <h1>Liste des séries</h1>
+    <div ng-app="app" ng-controller="ShowController">
+        <div google-chart chart="myChartObject" style="height:450px; width:100%;"></div>
+        <br /><br />
+
+        <table class="bordered">
+            <tr>
+                <td>Date d'ajout</td>
+                <td>Nom</td>
+                <td>Prenom</td>
+                <td>Bpm</td>
+                <td>Glycemie</td>
+                <td>Temperature</td>
+                <td>Pression Arteriel</td>
+                <td>Numéros de chambre</td>
+            </tr>
+            <tr ng-repeat="show in shows | filter: {title: search} | orderBy: '-date'" >
+                <a href="{{ path('patientProfile' , {'id':'{{ show.patient.id }}'}) }}">
+                    <td>{{ "{{ show.date | date:'yyyy-MM-dd HH:mm:ss' }}" }}</td>
+                    <td >{{ '{{ show.patient.last_name }}' }}</td></a>
+                <td >{{ '{{ show.patient.first_name }}' }}</td>
+                <td >{{ '{{ show.bpm }}' }}</td>
+                <td >{{ '{{ show.glycemia }}' }}</td>
+                <td >{{ '{{ show.temperature }}' }}</td>
+                <td >{{ '{{ show.blood_pressure }}' }}</td>
+                <td >{{ '{{ show.patient.seat.name }}' }}</td>
+            </tr>
+        </table>
+    </div>
+{% endblock %}
+

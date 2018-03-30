@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<thead>
+<tr>
+    {% for item in pat %}
+
+    <th class="center-align"><h1 style="color:blue">{{ item.nom }}</h1></th>
+
+</tr>
+</thead>
+{% endfor %}
+{% endblock %}

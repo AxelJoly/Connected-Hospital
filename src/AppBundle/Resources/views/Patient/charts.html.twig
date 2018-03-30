@@ -1,0 +1,120 @@
+
+{% extends 'base.html.twig' %}
+{% block head %}
+    <html>
+    <head>
+        <title>Charts</title>
+    </head>
+{% endblock %}
+{% block body %}
+<body>
+{% if state == true %}
+
+<div id="div_chart"></div>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    {{ gc_draw(piechart, 'div_chart') }}
+</script>
+{% else %}
+<h1>No Data.</h1>
+{% endif %}
+
+<div class="row center">
+
+    <div class="container z-depth-5">
+        <ul class="collection">
+
+            <div class="row">
+
+                <div class="container containerImg">
+
+
+                </div>
+            </div>
+
+
+            <div class="row">
+
+                <div class="input-field col s3 offset-s2">
+
+
+                    <li class="collection-item dismissable"><div>
+                            {{ profile.firstName }}
+                            <a href="#!" class="secondary-content" title="Prénom"><i
+                                        class="material-icons prefix">perm_identity</i></a>
+                        </div></li>
+
+
+
+                </div>
+                <div class="input-field col s3 offset-s1">
+
+                    <li class="collection-item dismissable"><div>
+                            {{ profile.lastName }}
+                            <a href="#!" class="secondary-content" title="Nom"><i
+                                        class="material-icons prefix">perm_identity</i></a>
+                        </div></li>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="input-field col s3 offset-s2">
+                    <li class="collection-item dismissable"><div>
+                            {{ profile.birthday | date }}
+                            <a href="#!" class="secondary-content" title="Pseudo"> <i
+                                        class="material-icons prefix">person_pin</i></a>
+                        </div></li>
+
+                </div>
+                <div class="input-field col s3 offset-s1">
+                    <li class="collection-item dismissable"><div>
+                            {{ profile.seat.room }}
+                            <a href="#!" class="secondary-content" title="E-Mail"> <i
+                                        class="material-icons prefix">email</i></a>
+                        </div></li>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="input-field col s3 offset-s2">
+                    <li class="collection-item dismissable"><div>
+                            {{ profile.relativePhone }}
+                            <a href="#!" class="secondary-content" title="Téléphone">
+                                <i class="material-icons prefix">stay_current_portrait</i>
+                            </a>
+                        </div></li>
+
+                </div>
+                <div class="input-field col s3 offset-s1">
+                    <li class="collection-item dismissable"><div>
+                            {{ profile.effectiveDate | date }}
+                            <a href="#!" class="secondary-content" title="Ecole"> <i
+                                        class="material-icons prefix">stars</i></a>
+                        </div></li>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s3 offset-s2">
+                    <li class="collection-item dismissable"><div>
+                            {{ profile.releaseDate | date }}
+                            <a href="#!" class="secondary-content" title="Date de naissance">
+                                <i class="material-icons prefix">today</i>
+                            </a>
+                        </div></li>
+
+                </div>
+
+            </div>
+
+        </ul>
+
+
+    </div>
+
+</div>
+</body>
+    </html>
+{% endblock %}

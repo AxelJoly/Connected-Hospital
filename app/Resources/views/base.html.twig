@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html >
+
+
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <!--
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/css/materialize.min.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js"></script>
+    -->
+
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Latest compiled and minified JavaScript -->
+
+
+
+
+
+
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-resource.min.js"></script>
+
+
+    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-touch.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-animate.js"></script>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <!--<script type="text/javascript" src="{{ asset('js/datepicker.js') }}"></script> -->
+
+
+
+
+
+
+
+
+
+</head>
+
+
+<body class="container-fluid">
+
+<nav>
+    <div class="nav-wrapper teal">
+        <a href="{{ path('home') }}" class="brand-logo">  Connected Hospital</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="{{ path('register') }}">Add Doctor</a></li>
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+            <li><a href="{{ path('show') }}">Patients List</a></li>
+            <li><a href=" {{ path('addPatient') }}">Add Patient</a></li>
+                <li><a href="{{ path('app.logout') }}">Logout</a></li>
+
+            {% endif %}
+        </ul>
+
+
+    <a href="#" data-activates="slide-out" class="teal button-collapse top-nav full hide-on-large-only"
+       style="display: flex;"><i class="material-icons">menu</i></a>
+
+    <ul id="slide-out" class="side-nav">
+
+        <li><a href="{{ path('home') }}"><i class="material-icons">home</i>Homepage</a></li>
+        <li><a href="{{ path('register') }}"><i class="material-icons">mode_edit</i>Register</a></li>
+        <li><div class="divider"></div></li>
+
+    </ul>
+    </div>
+</nav>
+{% block body %}{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript"
+            src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="{{ asset('bundles/pugxautocompleter/js/autocompleter-jqueryui.js') }}"></script>
+    <script src="{{ asset('js/searchBar.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/navbar.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/datepicker.js') }}"></script>
+
+{% endblock %}
+
+
+</body>
+</html>
