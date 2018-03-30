@@ -23,6 +23,6 @@ class HomeController extends Controller
         if ($this->container->get ( 'security.authorization_checker' )->isGranted ( 'IS_AUTHENTICATED_FULLY' )) {
         $user = $this->container->get ( 'security.token_storage' )->getToken ()->getUser ();
     }
-        return $this->redirectToRoute('@App/Home/home.html.twig');
+        return $this->redirectToRoute('homepage');
     }
 }

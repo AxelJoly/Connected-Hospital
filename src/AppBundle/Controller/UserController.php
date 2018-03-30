@@ -143,4 +143,15 @@ class UserController extends Controller
        
     }
 
+    /**
+     * @Route("/patientList", name="patientList")
+     */
+    public function patientListAction(Request $request) {
+
+        $patients = $this->getDoctrine()->getRepository('AppBundle:Patient')->findAll();
+
+        return $this->render ( 'AppBundle:Patient:patientList.html.twig', array (
+            'patients' => $patients
+        ) );
+    }
 }

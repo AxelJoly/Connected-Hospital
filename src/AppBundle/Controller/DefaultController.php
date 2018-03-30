@@ -76,9 +76,11 @@ class DefaultController extends Controller
      */
     public function showProfileAction(Request $request, $id)
     {
+        $patient = $this->getDoctrine()->getRepository('AppBundle:Patient')->find($id);
         // replace this example code with whatever you need
         return $this->render('AppBundle:Patient:patientProfile.html.twig', array (
-            'patientId' => $id
+            'patientId' => $id,
+            'patient' => $patient
         ));
     }
 

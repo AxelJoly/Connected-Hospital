@@ -71,23 +71,7 @@ class PatientController extends FOSRestController
 
         $patient = $this->getDoctrine()->getRepository('AppBundle:Patient')->find($id);
         $pat_tab = $this->getDoctrine()->getRepository('AppBundle:Data')->findBy(array('patient' => $patient), array('idData' => 'DESC'), $limit = 20);
-
-
-        // $patients = $this->getDoctrine()->getRepository('AppBundle:Patient')->findAll();
-
-        /*  $finalTab = [];
-          for($j=0; $j<count($patients); $j++) {
-              for ($i = 0; $i < count($pat_tab); $i++) {
-                  if($j == $pat_tab[$i]->getPatient()->getId()){
-
-                      $temp = $pat_tab[$i];
-                      var_dump($temp->getDate() > $finalTab[$j]->getDate());
-                      if (($temp->getDate() > $finalTab[$j]->getDate() || $finalTab[$j] == null)) {
-                          $finalTab[$j] = $temp;
-                      }
-                  }
-              }
-          }*/
+       
         return $pat_tab;
     }
 }

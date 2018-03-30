@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1 class="header center teal-text text-lighten-1">Liste des patients</h1>
+    <br>
+    <div class="row center">
+   <div class="container">
+    <table class="bordered">
+        <tr>
+            <td>Prenom</td>
+            <td>Nom</td>
+            <td>Date d'entrée</td>
+            <td>Date de sortie</td>
+            <td></td>
+        </tr>
+        {% for patient in patients %}
+        <tr>
+            <td>{{ patient.firstName }}</td>
+            <td >{{ patient.lastName }}</td>
+            <td >{{ patient.effectiveDate | date }}</td>
+            <td >{{ patient.releaseDate | date }}</td>
+            <td>
+                <a href="{{ path('showProfile',{'id':patient.id}) }}">
+                    <button>Voir les détails</button>
+                </a>
+            </td>
+        </tr>
+
+        {% endfor %}
+    </table>
+   </div>
+{% endblock %}
+
+

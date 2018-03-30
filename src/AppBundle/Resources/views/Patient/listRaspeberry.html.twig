@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1 class="header center teal-text text-lighten-1">Liste des Raspberry</h1>
+    <div class="row center">
+    <div class="container">
+    <table class="bordered">
+        <tr>
+            <td>Prénom</td>
+            <td>Nom</td>
+            <td>Nom du Raspberry</td>
+            <td></td>
+        </tr>
+        {% for raspberry in raspberries %}
+            <tr>
+                {% if raspberry.patient.firstName != '' %}
+                <td>{{ raspberry.patient.firstName }}</td>
+                <td >{{ raspberry.patient.lastName }}</td>
+                {% endif %}
+                <td >{{ raspberry.name }}</td>
+                <td>
+                    <a href="{{ path('modifyRaspberry',{'id':raspberry.id}) }}">
+                        <button>Modifier</button>
+                    </a>
+                </td>
+            </tr>
+
+        {% endfor %}
+    </table>
+    </div>
+{% endblock %}

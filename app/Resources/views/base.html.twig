@@ -65,12 +65,13 @@
     <div class="nav-wrapper teal">
         <a href="{{ path('home') }}" class="brand-logo">  Connected Hospital</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <li><a href="{{ path('register') }}">Add Doctor</a></li>
-            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-            <li><a href="{{ path('show') }}">Patients List</a></li>
-            <li><a href=" {{ path('addPatient') }}">Add Patient</a></li>
-                <li><a href="{{ path('app.logout') }}">Logout</a></li>
 
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <li><a href="{{ path('register') }}">Ajouter un Docteur</a></li>
+                <li><a href="{{ path('patientList') }}">Liste des patients</a></li>
+                <li><a href=" {{ path('addPatient') }}">Ajouter un patient</a></li>
+                <li><a href="{{ path('listRaspberry') }}">Raspberry</a></li>
+                <li><a href="{{ path('app.logout') }}">Logout</a></li>
             {% endif %}
         </ul>
 
@@ -81,7 +82,6 @@
     <ul id="slide-out" class="side-nav">
 
         <li><a href="{{ path('home') }}"><i class="material-icons">home</i>Homepage</a></li>
-        <li><a href="{{ path('register') }}"><i class="material-icons">mode_edit</i>Register</a></li>
         <li><div class="divider"></div></li>
 
     </ul>
@@ -89,8 +89,7 @@
 </nav>
 {% block body %}{% endblock %}
 {% block javascripts %}
-    <script type="text/javascript"
-            src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="{{ asset('bundles/pugxautocompleter/js/autocompleter-jqueryui.js') }}"></script>
