@@ -8,10 +8,10 @@
    <div class="container">
     <table class="bordered">
         <tr>
-            <td>Prenom</td>
-            <td>Nom</td>
-            <td>Date d'entrée</td>
-            <td>Date de sortie</td>
+            <td><b>Prenom</b></td>
+            <td><b>Nom</b></td>
+            <td><b>Date d'entrée</b></td>
+            <td><b>Date de sortie</b></td>
             <td></td>
         </tr>
         {% for patient in patients %}
@@ -23,6 +23,9 @@
             <td>
                 <a href="{{ path('showProfile',{'id':patient.id}) }}">
                     <button>Voir les détails</button>
+                </a>
+                <a href="{{ path('managePatient',{'id':patient.id}) }}">
+                    <button>Modifier</button>
                 </a>
             </td>
         </tr>

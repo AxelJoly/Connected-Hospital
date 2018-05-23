@@ -12,6 +12,7 @@ namespace AppBundle\Forms;
 use AppBundle\Entity\Configuration;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -21,13 +22,14 @@ class manageRaspberryFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
         $builder
             ->add('name', TextType::class)
-
+            ->add('interval', NumberType::class)
             ->add('patient', EntityType::class, array(
                 'class' => 'AppBundle:Patient',
-                'choice_label' => 'lastName',
+                'choice_label' => function ($patients) {
+                    return $patients->getLastName();
+                },
                 'label' => 'patient',
                 'empty_data'  => null,
                 'required' => false,
@@ -47,5 +49,6 @@ class manageRaspberryFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array('user_class' => Configuration::class));
+
     }
 }

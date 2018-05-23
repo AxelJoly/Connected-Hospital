@@ -27,6 +27,11 @@ class Configuration
      */
     private $name;
 
+    /**
+     * @var int
+     * @ORM\Column(name="interval", type="integer", nullable=true)
+     */
+    private $interval;
 
     /**
      * One Configuration has One User.
@@ -91,6 +96,22 @@ class Configuration
     public function setPatient($patient): void
     {
         $this->patient = $patient;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInterval(): int
+    {
+        return $this->interval;
+    }
+
+    /**
+     * @param int $interval
+     */
+    public function setInterval(int $interval): void
+    {
+        $this->interval = $interval;
     }
 
 

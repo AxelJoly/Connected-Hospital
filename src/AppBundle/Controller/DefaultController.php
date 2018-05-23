@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Doctor;
+use AppBundle\Entity\EncryptedPatient;
 use AppBundle\Entity\Patient;
 use AppBundle\Forms\createUserType;
 use AppBundle\Forms\SearchPatientType;
@@ -25,14 +26,9 @@ class DefaultController extends Controller
             $user = $this->container->get('security.token_storage')->getToken()->getUser();
         }
 
-        $form = $this->createForm ( SearchPatientType::class );
-
-        $form->handleRequest ( $request );
-
-        if ($form->isSubmitted () && $form->isValid ()) {}
 
         return $this->render('AppBundle:Home:home.html.twig', array (
-            'form' => $form->createView ()
+
         ) );
     }
 
@@ -78,10 +74,33 @@ class DefaultController extends Controller
     {
         $patient = $this->getDoctrine()->getRepository('AppBundle:Patient')->find($id);
         // replace this example code with whatever you need
+
+        $patientDecrypted = $this->getDoctrine()->getRepository('AppBundle:EncryptedPatient')->findOneBy(array('patient' => $patient));
+
+        $this->decrypt($patient, $patientDecrypted);
         return $this->render('AppBundle:Patient:patientProfile.html.twig', array (
             'patientId' => $id,
             'patient' => $patient
         ));
+    }
+
+    public function decrypt(Patient $user, EncryptedPatient $encryptedPatient){
+        $privateKey = openssl_get_privatekey(file_get_contents($this->get('kernel')->getRootDir(). '/config/private.key'));
+
+        $result = openssl_open(base64_decode($user->getFirstName()), $decryptedData, base64_decode($encryptedPatient->getFirstName()), $privateKey);
+        $user->setFirstName($decryptedData);
+
+        $result = openssl_open(base64_decode($user->getLastName()), $decryptedData, base64_decode($encryptedPatient->getLastName()), $privateKey);
+        $user->setLastName($decryptedData);
+
+        $result = openssl_open(base64_decode($user->getRelativePhone()), $decryptedData, base64_decode($encryptedPatient->getRelativePhone()), $privateKey);
+        $user->setRelativePhone($decryptedData);
+
+        $result = openssl_open(base64_decode($user->getDescription()), $decryptedData, base64_decode($encryptedPatient->getDescription()), $privateKey);
+        $user->setDescription($decryptedData);
+
+// Show if it was a success or failure
+
     }
 
 

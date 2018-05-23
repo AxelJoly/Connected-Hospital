@@ -32,23 +32,29 @@ class managePatientFormType extends AbstractType
             ->add('birthday', DateType::class, array(
                 'placeholder' => 'Date de naissance',
                 'widget' => 'single_text',
+
+                // do not render as type="date", to avoid HTML5 date pickers
                 'html5' => false,
                 'format' => 'yyyy-MM-dd',
+                // add a class that can be selected in JavaScript
+                'attr' => ['class' => 'datepicker']
 
             ))
-            ->add('relativePhone', NumberType::class)
+            ->add('relativePhone', TextType::class)
             ->add('description', TextType::class)
 
                ->add('effectiveDate', DateTimeType::class, array(
                    'date_widget' => "single_text",
                    'time_widget' => "single_text",
                    'label' => "Date d'occupation",
+                   'required' => false,
 
                ))
                ->add('releaseDate', DateTimeType::class, array(
                    'date_widget' => "single_text",
                    'time_widget' => "single_text",
                    'label' => "Date de libération",
+                   'required' => false,
                ))
             ->add('seat', EntityType::class, array(
                 'class' => 'AppBundle:Seat',

@@ -2,7 +2,7 @@
 {% block body %}
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-<h1 class="header center teal-text text-lighten-2">Hopitalo Connectado</h1>
+<h1 class="header center teal-text text-lighten-2">Hopital Connecté</h1>
 <div class="row center">
 	<h5 class="header col s12 light">
 
@@ -30,41 +30,36 @@
 
 				<div class="input-field col s3 offset-s2">
 
-
-					<li class="collection-item dismissable"><div>
-							{{ profile.firstName }}
-							<a href="#!" class="secondary-content" title="Prénom"><i
+					<a href="#!" class="secondary-content" title="Prénom"><i
 								class="material-icons prefix">perm_identity</i></a>
+					<li class="collection-item dismissable">
+						<div>
+                            {{ profile.lastName }} {{ profile.firstName }}
+
 						</div></li>
-
-
-
 				</div>
-				<div class="input-field col s3 offset-s1">
-
+				<div class="input-field col s3 offset-s2">
+					<a href="#!" class="secondary-content" title="Pseudo"> <i
+								class="material-icons prefix">cake</i></a>
 					<li class="collection-item dismissable"><div>
-							{{ profile.lastName }}
-							<a href="#!" class="secondary-content" title="Nom"><i
-								class="material-icons prefix">perm_identity</i></a>
+                            {{ profile.birthday | date }}
+
 						</div></li>
+
 				</div>
 			</div>
 
 			<div class="row">
-				<div class="input-field col s3 offset-s2">
-					<li class="collection-item dismissable"><div>
-							{{ profile.birthday | date }}
-							<a href="#!" class="secondary-content" title="Pseudo"> <i
-								class="material-icons prefix">person_pin</i></a>
-						</div></li>
 
-				</div>
 				<div class="input-field col s3 offset-s1">
 					<li class="collection-item dismissable"><div>
+							{% if state %}
 							{{ profile.seat.room }}
 							<a href="#!" class="secondary-content" title="E-Mail"> <i
 								class="material-icons prefix">email</i></a>
+							{% endif %}
 						</div></li>
+
 
 				</div>
 			</div>
@@ -81,24 +76,12 @@
 				</div>
 				<div class="input-field col s3 offset-s1">
 					<li class="collection-item dismissable"><div>
-							{{ profile.effectiveDate | date }}
+							{{ profile.effectiveDate | date }} - {{ profile.releaseDate | date }}
 							<a href="#!" class="secondary-content" title="Ecole"> <i
 								class="material-icons prefix">stars</i></a>
 						</div></li>
 
 				</div>
-			</div>
-			<div class="row">
-				<div class="input-field col s3 offset-s2">
-					<li class="collection-item dismissable"><div>
-							{{ profile.releaseDate | date }}
-							<a href="#!" class="secondary-content" title="Date de naissance">
-								<i class="material-icons prefix">today</i>
-							</a>
-						</div></li>
-
-				</div>
-
 			</div>
 
 		</ul>

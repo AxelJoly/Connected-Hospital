@@ -8,6 +8,8 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\EncryptedPatient;
+use AppBundle\Entity\Patient;
 use AppBundle\Services\ChartData;
 use AppBundle\Services\Chart;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -32,9 +34,15 @@ class ProfileController extends Controller
         }
 
         $patient = $this->getDoctrine()->getRepository('AppBundle:Patient')->find($id);
-
+        $patientDecrypted = $this->getDoctrine()->getRepository('AppBundle:EncryptedPatient')->findOneBy(array('patient' => $patient));
+        $this->decrypt($patient, $patientDecrypted);
+        if($patient->getSeat()){
+            $state = 1;
+        }else{
+            $state = 0;
+        }
         return $this->render ( 'AppBundle:Patient:profile.html.twig', array (
-            'profile' => $patient
+            'profile' => $patient, 'state' => $state
         ) );
     }
 
@@ -61,5 +69,24 @@ class ProfileController extends Controller
 
 
         return $this->render('AppBundle:Patient:charts.html.twig', array('piechart' => $chart->chartBuilder($id), 'state' => $state, 'profile' => $patient));
+    }
+
+    public function decrypt(Patient $user, EncryptedPatient $encryptedPatient){
+        $privateKey = openssl_get_privatekey(file_get_contents($this->get('kernel')->getRootDir(). '/config/private.key'));
+
+        $result = openssl_open(base64_decode($user->getFirstName()), $decryptedData, base64_decode($encryptedPatient->getFirstName()), $privateKey);
+        $user->setFirstName($decryptedData);
+
+        $result = openssl_open(base64_decode($user->getLastName()), $decryptedData, base64_decode($encryptedPatient->getLastName()), $privateKey);
+        $user->setLastName($decryptedData);
+
+        $result = openssl_open(base64_decode($user->getRelativePhone()), $decryptedData, base64_decode($encryptedPatient->getRelativePhone()), $privateKey);
+        $user->setRelativePhone($decryptedData);
+
+        $result = openssl_open(base64_decode($user->getDescription()), $decryptedData, base64_decode($encryptedPatient->getDescription()), $privateKey);
+        $user->setDescription($decryptedData);
+
+// Show if it was a success or failure
+
     }
 }

@@ -53,7 +53,7 @@ class Patient
     /**
      * @var int
      *
-     * @ORM\Column(name="relativePhone", type="integer")
+     * @ORM\Column(name="relativePhone", type="string")
      * @Groups({"details"})
      */
     private $relativePhone;
@@ -107,6 +107,15 @@ class Patient
      * @Groups({"details"})
      */
     private $seat;
+
+    /**
+     *
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\EncryptedPatient", mappedBy="patient")
+     * @Groups({"details"})
+     */
+    private $encryptedKeys;
+
+
 
 
 
@@ -341,6 +350,22 @@ class Patient
     public function setSeat($seat)
     {
         $this->seat = $seat;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEncryptedKeys()
+    {
+        return $this->encryptedKeys;
+    }
+
+    /**
+     * @param mixed $encryptedKeys
+     */
+    public function setEncryptedKeys($encryptedKeys)
+    {
+        $this->encryptedKeys = $encryptedKeys;
     }
 
 

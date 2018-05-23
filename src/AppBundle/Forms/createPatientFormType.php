@@ -41,7 +41,7 @@ class createPatientFormType extends AbstractType
                 'attr' => ['class' => 'datepicker']
 
             ))
-            ->add('relativePhone', NumberType::class)
+            ->add('relativePhone', TextType::class)
             ->add('description', TextType::class)
 
          /*   ->add('effectiveDate', DateTimeType::class, array(

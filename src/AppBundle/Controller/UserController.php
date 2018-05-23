@@ -10,6 +10,7 @@ namespace AppBundle\Controller;
 
 
 use AppBundle\Entity\Doctor;
+use AppBundle\Entity\EncryptedPatient;
 use AppBundle\Forms\createUserType;
 use AppBundle\Forms\createPatientFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -77,22 +78,23 @@ class UserController extends Controller
      */
     public function addPatientAction(Request $request) {
 
-        if( $this->container->get( 'security.authorization_checker' )->isGranted( 'IS_AUTHENTICATED_FULLY' ) )
-        {
-            $user = $this->container->get('security.token_storage')->getToken()->getUser();
-        }
 
-        $user = new Patient();
-        $form = $this->createForm ( createPatientFormType::class, $user );
+
+        $patient = new Patient();
+        $keyCrypted = new EncryptedPatient();
+        $form = $this->createForm ( createPatientFormType::class, $patient );
 
         $form->handleRequest ( $request );
 
         if ($form->isSubmitted () && $form->isValid ()) {
 
+            $encryptedData = $this->encrypt($patient, $keyCrypted);
+            dump($patient);
+            dump($keyCrypted);
             $em = $this->getDoctrine ()->getManager ();
-            $user->setEffectiveDate();
-            $user->setReleaseDate();
-            $em->persist ( $user );
+            $keyCrypted->setPatient($patient);
+            $em->persist ($patient);
+            $em->persist( $keyCrypted);
             $em->flush ();
 
             return $this->redirectToRoute ( 'home' );
@@ -114,17 +116,23 @@ class UserController extends Controller
             $user = $this->container->get('security.token_storage')->getToken()->getUser();
         }
 
-        $user = $this->getDoctrine()->getRepository('AppBundle:Patient')->find($id);
+        $patient = $this->getDoctrine()->getRepository('AppBundle:Patient')->find($id);
+        $keyCrypted = $this->getDoctrine()->getRepository('AppBundle:EncryptedPatient')->findOneBy(array('patient' => $patient));
+        $this->decrypt($patient, $keyCrypted);
 
-        $form = $this->createForm (managePatientFormType::class, $user);
+
+        $form = $this->createForm (managePatientFormType::class, $patient);
 
         $form->handleRequest ( $request );
 
         if ($form->isSubmitted () && $form->isValid ()) {
 
-            $em = $this->getDoctrine ()->getManager ();
+            $encryptedData = $this->encrypt($patient, $keyCrypted);
 
-            $em->persist ( $user );
+            $em = $this->getDoctrine ()->getManager ();
+            $keyCrypted->setPatient($patient);
+            $em->persist ($patient);
+            $em->persist( $keyCrypted);
             $em->flush ();
 
             return $this->redirectToRoute ( 'home' );
@@ -149,9 +157,74 @@ class UserController extends Controller
     public function patientListAction(Request $request) {
 
         $patients = $this->getDoctrine()->getRepository('AppBundle:Patient')->findAll();
+        $patientsDecrypted = array();
+        foreach($patients as $patient){
+            $keyCrypted = $this->getDoctrine()->getRepository('AppBundle:EncryptedPatient')->findOneBy(array('patient' => $patient));
+            $this->decrypt($patient, $keyCrypted);
+            array_push($patientsDecrypted, $patient);
+        }
+
+        return $this->render ( 'AppBundle:Patient:patientList.html.twig', array (
+            'patients' => $patientsDecrypted
+        ) );
+    }
+
+    /**
+     * @Route("/patientList/encrypted", name="patientListEncrypted")
+     */
+    public function patientListEncryptedAction(Request $request) {
+
+        $patients = $this->getDoctrine()->getRepository('AppBundle:Patient')->findAll();
+
 
         return $this->render ( 'AppBundle:Patient:patientList.html.twig', array (
             'patients' => $patients
         ) );
+    }
+
+    public function encrypt(Patient $patient, EncryptedPatient $encryptedPatient){
+
+
+        $publicKeys[] = openssl_get_publickey(file_get_contents($this->get('kernel')->getRootDir(). '/config/public.pem'));
+
+        // Encrypt the $fullText and return the $encryptedText and the $encryptedKeys
+        $res1 = openssl_seal($patient->getLastName(), $encryptedText, $encryptedKeys1, $publicKeys);
+        $patient->setLastName(base64_encode($encryptedText));
+        $encryptedPatient->setLastName(base64_encode($encryptedKeys1[0]));
+
+        $res2 = openssl_seal($patient->getFirstName(), $encryptedText, $encryptedKeys2, $publicKeys);
+        $patient->setFirstName(base64_encode($encryptedText));
+        $encryptedPatient->setFirstName(base64_encode($encryptedKeys2[0]));
+
+        $res3 = openssl_seal($patient->getRelativePhone(), $encryptedText, $encryptedKeys3, $publicKeys);
+        $patient->setRelativePhone(base64_encode($encryptedText));
+        $encryptedPatient->setRelativePhone(base64_encode($encryptedKeys3[0]));
+
+        $res4 = openssl_seal($patient->getDescription(), $encryptedText, $encryptedKeys4, $publicKeys);
+        $patient->setDescription(base64_encode($encryptedText));
+        $encryptedPatient->setDescription(base64_encode($encryptedKeys4[0]));
+
+
+    }
+
+
+
+    public function decrypt(Patient $user, EncryptedPatient $encryptedPatient){
+        $privateKey = openssl_get_privatekey(file_get_contents($this->get('kernel')->getRootDir(). '/config/private.key'));
+
+        $result = openssl_open(base64_decode($user->getFirstName()), $decryptedData, base64_decode($encryptedPatient->getFirstName()), $privateKey);
+        $user->setFirstName($decryptedData);
+
+        $result = openssl_open(base64_decode($user->getLastName()), $decryptedData, base64_decode($encryptedPatient->getLastName()), $privateKey);
+        $user->setLastName($decryptedData);
+
+        $result = openssl_open(base64_decode($user->getRelativePhone()), $decryptedData, base64_decode($encryptedPatient->getRelativePhone()), $privateKey);
+        $user->setRelativePhone($decryptedData);
+
+        $result = openssl_open(base64_decode($user->getDescription()), $decryptedData, base64_decode($encryptedPatient->getDescription()), $privateKey);
+        $user->setDescription($decryptedData);
+
+// Show if it was a success or failure
+
     }
 }

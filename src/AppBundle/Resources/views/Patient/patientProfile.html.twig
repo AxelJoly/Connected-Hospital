@@ -20,6 +20,8 @@
         app.controller('ShowController', function ($scope, Show,$interval, $filter) {
             $scope.shows = [];
 
+            $scope.bpmPatient = {};
+            $scope.temperaturePatient = {};
             $scope.myChartObject = {};
             $scope.loading = false;
             $scope.details = null;
@@ -34,7 +36,8 @@
                     .then( function (data) {
 
                         $scope.shows = data;
-                        init();
+                        init($scope.bpmPatient, 'BPM', '#0000FF');
+                        init( $scope.temperaturePatient, 'Temperature', '#009900');
                     })
                     .finally( function () {
                         $scope.loading = false;
@@ -49,64 +52,62 @@
                 });
             }
 
-            function init() {
+            function init(myChartObject, dataName, color) {
 
                 var jsonArray = [];
-                $scope.myChartObject.type = "LineChart";
-                $scope.myChartObject.displayed = false;
+
+                myChartObject.type = "LineChart";
+                myChartObject.displayed = false;
                 var length = $scope.shows.length;
 
+                if(dataName === 'BPM'){
+                    for (var i = length -1; i >= 0; i--) {
+                        jsonArray.push({
+                            c: [{
+                                v: $filter('date')($scope.shows[i].date,'HH:mm:ss', '+0000')
+                            }, {
+                                v: $scope.shows[i].bpm,
+                                f: $scope.shows[i].bpm.toString()
+                            }]
+                        });
 
-                for (var i = length -1; i >= 0; i--) {
-                    jsonArray.push({
-                        c: [{
+                    }
 
-                        }, {
-                            v: $scope.shows[i].bpm,
-                            f: $filter('date')($scope.shows[i].date,'yyyy-MM-dd HH:mm:ss')
-                        }, {
-                            v: $scope.shows[i].glycemia,
-                            f: $filter('date')($scope.shows[i].date,'yyyy-MM-dd HH:mm:ss')
-                        }, {
-                            v: $scope.shows[i].temperature,
-                            f: $filter('date')($scope.shows[i].date,'yyyy-MM-dd HH:mm:ss')
-                        }, {
-                            v: $scope.shows[i].blood_pressure,
-                            f: $filter('date')($scope.shows[i].date,'yyyy-MM-dd HH:mm:ss')
-                        }]
-                    });
 
                 }
-                $scope.myChartObject.data = {
+
+                if(dataName === 'Temperature'){
+                    for (var i = length -1; i >= 0; i--) {
+                        jsonArray.push({
+                            c: [{
+                                v: $filter('date')($scope.shows[i].date,'HH:mm:ss', '+0000')
+                            }, {
+                                v: $scope.shows[i].temperature,
+                                f: $scope.shows[i].temperature.toString()
+                            }]
+                        });
+
+                    }
+                }
+
+                myChartObject.data = {
                     "cols": [{
                         id: "values",
                         label: "Données du patient",
                         type: "string"
                     }, {
                         id: "bpm",
-                        label: "BPM",
-                        type: "number"
-                    }, {
-                        id: "glycemia",
-                        label: "Glycémie",
-                        type: "number"
-                    }, {
-                        id: "temperature",
-                        label: "Temperature",
-                        type: "number"
-                    }, {
-                        id: "bloodPressure",
-                        label: "Pression Artérielle",
+                        label: dataName,
                         type: "number"
                     }],
                     "rows": jsonArray}
 
-                console.log(jsonArray);
 
-                    $scope.myChartObject.options = {
+
+                    myChartObject.options = {
                     "title": "Etat du patient",
-                    "colors": ['#0000FF', '#009900', '#CC0000', '#DD9900'],
-                    "defaultColors": ['#0000FF', '#009900', '#CC0000', '#DD9900'],
+                    "colors": [color],
+                    "defaultColors": [color],
                     "isStacked": "true",
                     "fill": 20,
                     "displayExactValues": true,
@@ -121,8 +122,8 @@
                     }
                 };
 
-                $scope.myChartObject.view = {
-                    columns: [0, 1, 2, 3, 4]
+                myChartObject.view = {
+                    columns: [0, 1]
                 };
             }
 
@@ -144,32 +145,32 @@
 
     <h1>Patient {{ patient.lastName }} {{ patient.firstName }}</h1>
     <div ng-app="app" ng-controller="ShowController">
-        <div google-chart chart="myChartObject" style="height:450px; width:100%;"></div>
+        <div class="row">
+            <div class="col s12 m6">
+                <div google-chart chart="bpmPatient" style="height:450px; width:100%;"></div>
+            </div>
+            <div class="col s12 m6">
+                <div google-chart chart="temperaturePatient" style="height:450px; width:100%;"></div>
+            </div>
+        </div>
         <br /><br />
+        <div class="container">
+            <a href="{{ path('patientProfile', {'id': patient.id}) }}"><p>Plus de details</p></a>
+            <table class="bordered">
+                <tr>
+                    <td><b>Date d'ajout</b></td>
+                    <td><b>Bpm</b></td>
+                    <td><b>Temperature</b></td>
+                </tr>
+                <tr ng-repeat="show in shows | filter: {title: search} | orderBy: '-date'" >
+                    <a href="{{ path('patientProfile' , {'id':'{{ show.patient.id }}'}) }}">
+                        <td>{{ "{{ show.date | date:'yyyy-MM-dd HH:mm:ss' }}" }}</td>
+                        <td >{{ '{{ show.bpm }}' }}</td>
+                        <td >{{ '{{ show.temperature }}' }}</td>
+                </tr>
+            </table>
+        </div>
 
-        <table class="bordered">
-            <tr>
-                <td>Date d'ajout</td>
-                <td>Nom</td>
-                <td>Prenom</td>
-                <td>Bpm</td>
-                <td>Glycemie</td>
-                <td>Temperature</td>
-                <td>Pression Arteriel</td>
-                <td>Numéros de chambre</td>
-            </tr>
-            <tr ng-repeat="show in shows | filter: {title: search} | orderBy: '-date'" >
-                <a href="{{ path('patientProfile' , {'id':'{{ show.patient.id }}'}) }}">
-                    <td>{{ "{{ show.date | date:'yyyy-MM-dd HH:mm:ss' }}" }}</td>
-                    <td >{{ '{{ show.patient.last_name }}' }}</td></a>
-                <td >{{ '{{ show.patient.first_name }}' }}</td>
-                <td >{{ '{{ show.bpm }}' }}</td>
-                <td >{{ '{{ show.glycemia }}' }}</td>
-                <td >{{ '{{ show.temperature }}' }}</td>
-                <td >{{ '{{ show.blood_pressure }}' }}</td>
-                <td >{{ '{{ show.patient.seat.name }}' }}</td>
-            </tr>
-        </table>
     </div>
 {% endblock %}
 
